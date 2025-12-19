@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  phone              String    @unique
+  passwordHash       String    @map("password_hash")
+  fullName           String    @map("full_name")
+  isActive           Boolean   @default(true) @map("is_active")
+  isSuspended        Boolean   @default(false) @map("is_suspended")
+  listingCount       Int       @default(0) @map("listing_count")
+  dailyMessageCount  Int       @default(0) @map("daily_message_count")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  lastLogin          DateTime? @map("last_login")
+
+  properties         Property[]
+  sentMessages       Message[]       @relation("SentMessages")
+  receivedMessages   Message[]       @relation("ReceivedMessages")
+  favorites          Favorite[]
+  savedSearches      SavedSearch[]
+  reports            Report[]        @relation("Reporter")
+  blockedUsers       BlockedUser[]   @relation("Blocker")
+  blockedBy          BlockedUser[]   @relation("Blocked")
+
+  @@map("users")
+}
+
+model Property {
+  id              String    @id @default(uuid())
+  ownerId         String    @map("owner_id")
+  title           String
+  description     String    @db.Text
+  propertyType    PropertyType @map("property_type")
+  category        PropertyCategory
+  address         String
+  city            String
+  region          String
+  latitude        Decimal?  @db.Decimal(10, 8)
+  longitude       Decimal?  @db.Decimal(11, 8)
+  price           Decimal   @db.Decimal(10, 2)
+  currency        String    @default("TND")
+  pricePeriod     PricePeriod @map("price_period")
+  isNegotiable    Boolean   @default(false) @map("is_negotiable")
+  sizeSqm         Decimal   @map("size_sqm") @db.Decimal(10, 2)
+  bedrooms        Int?
+  bathrooms       Int?
+  availabilityDate DateTime? @map("availability_date")
+  status          PropertyStatus @default(AVAILABLE)
+  listedBy        ListedBy  @map("listed_by")
+  viewCount       Int       @default(0) @map("view_count")
+  inquiryCount    Int       @default(0) @map("inquiry_count")
+  favoriteCount   Int       @default(0) @map("favorite_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastActivityAt  DateTime  @default(now()) @map("last_activity_at")
+  expiresAt       DateTime  @map("expires_at")
+
+  owner           User      @relation(fields: [ownerId], references: [id])
+  images          PropertyImage[]
+  amenities       PropertyAmenity[]
+  messages        Message[]
+  favorites       Favorite[]
+  reports         Report[]
+  duplicateAlerts1 DuplicateAlert[] @relation("Property1")
+  duplicateAlerts2 DuplicateAlert[] @relation("Property2")
+
+  @@index([city, status])
+  @@index([propertyType, category])
+  @@index([price])
+  @@index([expiresAt])
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String   @id @default(uuid())
+  propertyId String   @map("property_id")
+  imageUrl   String   @map("image_url")
+  imageHash  String?  @map("image_hash")
+  imageOrder Int      @map("image_order")
+  isPrimary  Boolean  @default(false) @map("is_primary")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_images")
+}
+
+model Amenity {
+  id         String   @id @default(uuid())
+  nameAr     String   @map("name_ar")
+  nameEn     String   @map("name_en")
+  icon       String?
+  category   AmenityCategory
+
+  properties PropertyAmenity[]
+
+  @@map("amenities")
+}
+
+model PropertyAmenity {
+  propertyId String @map("property_id")
+  amenityId  String @map("amenity_id")
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+
+  @@id([propertyId, amenityId])
+  @@map("property_amenities")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String   @map("sender_id")
+  receiverId  String   @map("receiver_id")
+  propertyId  String   @map("property_id")
+  messageText String   @map("message_text") @db.Text
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@index([senderId, receiverId])
+  @@index([propertyId])
+  @@map("messages")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  propertyId String   @map("property_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User     @relation(fields: [userId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@map("favorites")
+}
+
+model SavedSearch {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  searchCriteria Json     @map("search_criteria")
+  alertEnabled   Boolean  @default(true) @map("alert_enabled")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("saved_searches")
+}
+
+model Report {
+  id                 String       @id @default(uuid())
+  reporterId         String       @map("reporter_id")
+  reportedUserId     String?      @map("reported_user_id")
+  reportedPropertyId String?      @map("reported_property_id")
+  reportType         ReportType   @map("report_type")
+  reason             String
+  description        String       @db.Text
+  status             ReportStatus @default(PENDING)
+  adminNotes         String?      @map("admin_notes") @db.Text
+  createdAt          DateTime     @default(now()) @map("created_at")
+  reviewedAt         DateTime?    @map("reviewed_at")
+  reviewedBy         String?      @map("reviewed_by")
+
+  reporter           User         @relation("Reporter", fields: [reporterId], references: [id])
+  reportedProperty   Property?    @relation(fields: [reportedPropertyId], references: [id])
+
+  @@map("reports")
+}
+
+model DuplicateAlert {
+  id              String              @id @default(uuid())
+  propertyId1     String              @map("property_id_1")
+  propertyId2     String              @map("property_id_2")
+  similarityScore Decimal             @map("similarity_score") @db.Decimal(5, 2)
+  matchFactors    Json                @map("match_factors")
+  status          DuplicateStatus     @default(PENDING)
+  adminNotes      String?             @map("admin_notes") @db.Text
+  createdAt       DateTime            @default(now()) @map("created_at")
+  reviewedAt      DateTime?           @map("reviewed_at")
+
+  property1       Property            @relation("Property1", fields: [propertyId1], references: [id])
+  property2       Property            @relation("Property2", fields: [propertyId2], references: [id])
+
+  @@map("duplicate_alerts")
+}
+
+model BlockedUser {
+  id         String   @id @default(uuid())
+  blockerId  String   @map("blocker_id")
+  blockedId  String   @map("blocked_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  blocker    User     @relation("Blocker", fields: [blockerId], references: [id])
+  blocked    User     @relation("Blocked", fields: [blockedId], references: [id])
+
+  @@unique([blockerId, blockedId])
+  @@map("blocked_users")
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+  MIXED
+}
+
+enum PropertyCategory {
+  HOUSE
+  APARTMENT
+  OFFICE
+  SHOP
+  LAND
+}
+
+enum PricePeriod {
+  MONTH
+  YEAR
+  DAY
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  RENTED
+  HIDDEN
+}
+
+enum ListedBy {
+  OWNER
+  ON_BEHALF
+}
+
+enum AmenityCategory {
+  GENERAL
+  RESIDENTIAL
+  COMMERCIAL
+}
+
+enum ReportType {
+  USER
+  PROPERTY
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}
+
+enum DuplicateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
