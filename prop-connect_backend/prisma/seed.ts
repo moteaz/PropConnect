@@ -37,7 +37,7 @@ async function main() {
 
   console.log('🔐 Creating initial SuperAdmin user...');
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword: string = await bcrypt.hash(password, 12);
 
   await prisma.user.create({
     data: {
@@ -58,8 +58,11 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async (e) => {
-    console.error('❌ Seed failed:', e);
+  .catch(async (e: unknown) => {
+    console.error(
+      '❌ Seed failed:',
+      e instanceof Error ? e.message : String(e),
+    );
     await prisma.$disconnect();
     process.exit(1);
   });
