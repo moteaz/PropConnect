@@ -13,6 +13,7 @@ model User {
   phone              String    @unique
   passwordHash       String    @map("password_hash")
   fullName           String    @map("full_name")
+  role               UserRole  @default(USER)
   isActive           Boolean   @default(true) @map("is_active")
   isSuspended        Boolean   @default(false) @map("is_suspended")
   listingCount       Int       @default(0) @map("listing_count")
@@ -262,4 +263,10 @@ enum DuplicateStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
 }
