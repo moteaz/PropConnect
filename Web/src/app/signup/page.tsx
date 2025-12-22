@@ -2,14 +2,15 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
+import api from "@/lib/api";
 
 interface SignUpFormData {
-  name: string;
+  fullName: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
 }
@@ -17,8 +18,9 @@ interface SignUpFormData {
 export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState<SignUpFormData>({
-    name: "",
+    fullName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -36,8 +38,8 @@ export default function SignUp() {
     e.preventDefault();
     setError("");
 
-    if (!formData.name) {
-      setError("Name is required");
+    if (!formData.fullName || formData.fullName.length < 3) {
+      setError("Full name must be at least 3 characters");
       return;
     }
 
@@ -46,8 +48,13 @@ export default function SignUp() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (!formData.phone || !/^\+216\d{8}$/.test(formData.phone)) {
+      setError("Phone must be in format +216XXXXXXXX");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
 
@@ -59,22 +66,19 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/auth/signup", {
-        name: formData.name,
+      const response = await api.post("/api/auth/register", {
+        fullName: formData.fullName,
         email: formData.email,
+        phone: formData.phone,
         password: formData.password,
       });
 
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+      if (response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
         router.push("/dashboard");
       }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Registration failed");
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -104,10 +108,10 @@ export default function SignUp() {
           <div className="relative">
             <input
               type="text"
-              id="name"
-              value={formData.name}
+              id="fullName"
+              value={formData.fullName}
               onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
+                setFormData({ ...formData, fullName: e.target.value })
               }
               className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent"
               placeholder="Full Name"
@@ -115,7 +119,7 @@ export default function SignUp() {
               aria-required="true"
             />
             <label
-              htmlFor="name"
+              htmlFor="fullName"
               className="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-violet-600"
             >
               Full Name
@@ -140,6 +144,27 @@ export default function SignUp() {
               className="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-violet-600"
             >
               Email
+            </label>
+          </div>
+
+          <div className="relative">
+            <input
+              type="tel"
+              id="phone"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent"
+              placeholder="Phone"
+              aria-label="Phone number"
+              aria-required="true"
+            />
+            <label
+              htmlFor="phone"
+              className="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-violet-600"
+            >
+              Phone (+216XXXXXXXX)
             </label>
           </div>
 

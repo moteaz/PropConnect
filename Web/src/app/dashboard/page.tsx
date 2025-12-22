@@ -3,7 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FaHome, FaHeart, FaUser, FaSignOutAlt, FaPlus, FaBed, FaBath, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaHome,
+  FaHeart,
+  FaUser,
+  FaSignOutAlt,
+  FaPlus,
+  FaBed,
+  FaBath,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 interface Property {
   id: number;
@@ -27,7 +36,8 @@ export default function Dashboard() {
       price: "$450,000",
       beds: 4,
       baths: 3,
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
+      image:
+        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
       status: "active",
     },
     {
@@ -98,7 +108,9 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm mb-1">Total Properties</p>
-                <p className="text-3xl font-bold text-gray-800">{properties.length}</p>
+                <p className="text-3xl font-bold text-gray-800">
+                  {properties.length}
+                </p>
               </div>
               <div className="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center">
                 <FaHome className="text-2xl text-violet-600" />
@@ -111,7 +123,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-gray-600 text-sm mb-1">Active Listings</p>
                 <p className="text-3xl font-bold text-gray-800">
-                  {properties.filter(p => p.status === "active").length}
+                  {properties.filter((p) => p.status === "active").length}
                 </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -155,14 +167,17 @@ export default function Dashboard() {
                     alt={property.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
-                    property.status === "active" 
-                      ? "bg-green-500 text-white" 
-                      : property.status === "pending"
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-500 text-white"
-                  }`}>
-                    {property.status.charAt(0).toUpperCase() + property.status.slice(1)}
+                  <div
+                    className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                      property.status === "active"
+                        ? "bg-green-500 text-white"
+                        : property.status === "pending"
+                        ? "bg-yellow-500 text-white"
+                        : "bg-gray-500 text-white"
+                    }`}
+                  >
+                    {property.status.charAt(0).toUpperCase() +
+                      property.status.slice(1)}
                   </div>
                 </div>
                 <div className="p-4">

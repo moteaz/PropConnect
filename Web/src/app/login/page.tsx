@@ -2,10 +2,10 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
+import api from "@/lib/api";
 
 interface LoginFormData {
   email: string;
@@ -44,21 +44,17 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/auth/login", {
+      const response = await api.post("/api/auth/login", {
         email: formData.email,
         password: formData.password,
       });
 
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+      if (response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
         router.push("/dashboard");
       }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Invalid email or password");
-      } else {
-        setError("An error occurred. Please try again.");
-      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
