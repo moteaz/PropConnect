@@ -5,9 +5,7 @@ export const AUTH_CONSTANTS = {
 } as const;
 
 export const AUTH_MESSAGES = {
-  EMAIL_ALREADY_EXISTS: 'Email already registered',
-  PHONE_ALREADY_EXISTS: 'Phone number already registered',
-  USER_ALREADY_EXISTS: 'User already registered',
-  INVALID_CREDENTIALS: 'Invalid credentials',
+  USER_ALREADY_EXISTS: 'An account with these credentials already exists',
+  INVALID_CREDENTIALS: 'Invalid email or password',
   ACCOUNT_INACTIVE: 'Account is inactive or suspended',
 } as const;
