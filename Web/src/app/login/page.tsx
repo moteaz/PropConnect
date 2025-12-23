@@ -1,62 +1,48 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FormEvent } from "react";
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
-import api from "@/lib/api";
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+import { FormInput } from "@/components/ui/FormInput";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { ErrorAlert } from "@/components/ui/ErrorAlert";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { loginSchema } from "@/lib/validators/auth";
+import { useState } from "react";
+import type { LoginCredentials } from "@/lib/types";
 
 export default function Login() {
-  const router = useRouter();
-  const [formData, setFormData] = useState<LoginFormData>({
+  const { login, loading, error, setError } = useAuth();
+  const [formData, setFormData] = useState<LoginCredentials>({
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setValidationErrors({});
 
-    if (!validateEmail(formData.email)) {
-      setError("Please enter a valid email address");
+    const result = loginSchema.safeParse(formData);
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message;
+        }
+      });
+      setValidationErrors(errors);
       return;
     }
-
-    if (!formData.password) {
-      setError("Password is required");
-      return;
-    }
-
-    setLoading(true);
 
     try {
-      const response = await api.post("/api/auth/login", {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (response.data.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
-        router.push("/dashboard");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
+      await login(result.data);
+    } catch {
+      // Error handled by useAuth hook
     }
   };
 
@@ -71,65 +57,30 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div
-              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
-              role="alert"
-              aria-live="polite"
-            >
-              {error}
-            </div>
-          )}
+          <ErrorAlert message={error} onDismiss={() => setError("")} />
 
-          <div className="relative">
-            <input
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent"
-              placeholder="Email"
-              aria-label="Email address"
-              aria-required="true"
-            />
-            <label
-              htmlFor="email"
-              className="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-violet-600"
-            >
-              Email
-            </label>
-          </div>
+          <FormInput
+            type="email"
+            id="email"
+            label="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            error={validationErrors.email}
+            required
+          />
 
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent pr-12"
-              placeholder="Password"
-              aria-label="Password"
-              aria-required="true"
-            />
-            <label
-              htmlFor="password"
-              className="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-violet-600"
-            >
-              Password
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-3.5 text-gray-500 hover:text-violet-600 transition-colors"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-            </button>
-          </div>
+          <PasswordInput
+            id="password"
+            label="Password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            error={validationErrors.password}
+            required
+          />
 
           <button
             type="submit"
@@ -143,7 +94,7 @@ export default function Login() {
 
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/signup"
               className="text-violet-600 font-semibold hover:text-violet-700 transition-colors"

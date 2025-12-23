@@ -1,72 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  FaHome,
-  FaHeart,
-  FaUser,
-  FaSignOutAlt,
-  FaPlus,
-  FaBed,
-  FaBath,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import { FaHome, FaHeart, FaUser, FaSignOutAlt, FaPlus, FaBed, FaBath, FaMapMarkerAlt } from "react-icons/fa";
+import { useAuth } from "@/lib/hooks/useAuth";
+import type { Property } from "@/lib/types";
 
-interface Property {
-  id: number;
-  title: string;
-  location: string;
-  price: string;
-  beds: number;
-  baths: number;
-  image: string;
-  status: "active" | "pending" | "sold";
-}
+const MOCK_PROPERTIES: Property[] = [
+  {
+    id: 1,
+    title: "Modern Family House",
+    location: "Los Angeles, CA",
+    price: "$450,000",
+    beds: 4,
+    baths: 3,
+    sqft: "2,400",
+    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
+    status: "active" as const,
+  },
+  {
+    id: 2,
+    title: "Luxury Apartment",
+    location: "New York, NY",
+    price: "$320,000",
+    beds: 2,
+    baths: 2,
+    sqft: "1,200",
+    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400",
+    status: "pending" as const,
+  },
+];
 
 export default function Dashboard() {
-  const router = useRouter();
-  const [user, setUser] = useState<string | null>(null);
-  const [properties, setProperties] = useState<Property[]>([
-    {
-      id: 1,
-      title: "Modern Family House",
-      location: "Los Angeles, CA",
-      price: "$450,000",
-      beds: 4,
-      baths: 3,
-      image:
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
-      status: "active",
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment",
-      location: "New York, NY",
-      price: "$320,000",
-      beds: 2,
-      baths: 2,
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400",
-      status: "pending",
-    },
-  ]);
+  const { logout } = useAuth();
+  const [properties] = useState<Property[]>(MOCK_PROPERTIES);
+  const [user] = useState("Demo User");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    } else {
-      setUser("Demo User");
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/");
+  const handleLogout = async () => {
+    await logout();
   };
 
-  if (!user) return null;
+  const activeCount = properties.filter((p) => p.status === "active").length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,9 +96,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm mb-1">Active Listings</p>
-                <p className="text-3xl font-bold text-gray-800">
-                  {properties.filter((p) => p.status === "active").length}
-                </p>
+                <p className="text-3xl font-bold text-gray-800">{activeCount}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <FaHeart className="text-2xl text-green-600" />
