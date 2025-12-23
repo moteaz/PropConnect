@@ -37,7 +37,7 @@ export class AuthService {
       fullName,
     });
 
-    const token = this.tokenService.generateToken(user.id, user.email);
+    const token = this.tokenService.generateToken(user.id, user.role);
 
     this.logger.log('User registered successfully');
 
@@ -55,7 +55,7 @@ export class AuthService {
 
     this.updateLastLogin(user.id);
 
-    const token = this.tokenService.generateToken(user.id, user.email);
+    const token = this.tokenService.generateToken(user.id, user.role);
 
     this.logger.log('User logged in successfully');
 

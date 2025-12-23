@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { FaHome, FaHeart, FaUser, FaSignOutAlt, FaPlus, FaBed, FaBath, FaMapMarkerAlt } from "react-icons/fa";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useUser } from "@/lib/auth/user-context";
 import type { Property } from "@/lib/types";
+import { PropertyStatus } from "@/lib/types";
 
 const MOCK_PROPERTIES: Property[] = [
   {
@@ -16,7 +18,7 @@ const MOCK_PROPERTIES: Property[] = [
     baths: 3,
     sqft: "2,400",
     image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
-    status: "active" as const,
+    status: PropertyStatus.ACTIVE,
   },
   {
     id: 2,
@@ -27,20 +29,20 @@ const MOCK_PROPERTIES: Property[] = [
     baths: 2,
     sqft: "1,200",
     image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400",
-    status: "pending" as const,
+    status: PropertyStatus.ACTIVE
   },
 ];
 
 export default function Dashboard() {
+  const { user } = useUser();
   const { logout } = useAuth();
   const [properties] = useState<Property[]>(MOCK_PROPERTIES);
-  const [user] = useState("Demo User");
 
   const handleLogout = async () => {
     await logout();
   };
 
-  const activeCount = properties.filter((p) => p.status === "active").length;
+  const activeCount = properties.filter((p) => p.status === PropertyStatus.ACTIVE).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,7 +73,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome back, {user}!
+            Welcome back, {user?.fullName}!
           </h1>
           <p className="text-gray-600">Manage your properties and listings</p>
         </div>
@@ -141,9 +143,9 @@ export default function Dashboard() {
                   />
                   <div
                     className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
-                      property.status === "active"
+                      property.status === PropertyStatus.ACTIVE
                         ? "bg-green-500 text-white"
-                        : property.status === "pending"
+                        : property.status === PropertyStatus.PENDING
                         ? "bg-yellow-500 text-white"
                         : "bg-gray-500 text-white"
                     }`}
