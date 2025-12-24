@@ -1,35 +1,141 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { FaHome, FaHeart, FaUser, FaSignOutAlt, FaPlus, FaBed, FaBath, FaMapMarkerAlt } from "react-icons/fa";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { useUser } from "@/lib/auth/user-context";
+import { useUser } from "@/lib/features/auth/user-context";
 import type { Property } from "@/lib/types";
-import { PropertyStatus } from "@/lib/types";
+import { PropertyStatus, PropertyType, PropertyCategory, PricePeriod } from "@/lib/types";
+import { usePropertyFilters } from "@/lib/features/dashboard/hooks/usePropertyFilters";
+import { DashboardHeader } from "@/lib/features/dashboard/components/DashboardHeader";
+import { SearchBar } from "@/lib/features/dashboard/components/SearchBar";
+import { PropertyFilters } from "@/lib/features/dashboard/components/PropertyFilters";
+import { PropertyGrid } from "@/lib/features/dashboard/components/PropertyGrid";
+import { PropertyDetailsModal } from "@/lib/features/dashboard/components/PropertyDetailsModal";
 
 const MOCK_PROPERTIES: Property[] = [
   {
-    id: 1,
-    title: "Modern Family House",
-    location: "Los Angeles, CA",
-    price: "$450,000",
-    beds: 4,
-    baths: 3,
-    sqft: "2,400",
-    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400",
-    status: PropertyStatus.ACTIVE,
+    id: "1",
+    title: "Villa Moderne à La Marsa",
+    description: "Magnifique villa moderne avec vue sur mer, piscine privée et jardin paysager. Finitions haut de gamme.",
+    propertyType: PropertyType.RESIDENTIAL,
+    category: PropertyCategory.HOUSE,
+    address: "Avenue Habib Bourguiba",
+    city: "La Marsa",
+    region: "Tunis",
+    price: 850000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: true,
+    sizeSqm: 320,
+    bedrooms: 5,
+    bathrooms: 3,
+    status: PropertyStatus.AVAILABLE,
+    images: [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800"
+    ],
+    createdAt: new Date().toISOString(),
   },
   {
-    id: 2,
-    title: "Luxury Apartment",
-    location: "New York, NY",
-    price: "$320,000",
-    beds: 2,
-    baths: 2,
-    sqft: "1,200",
-    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400",
-    status: PropertyStatus.ACTIVE
+    id: "2",
+    title: "Appartement Centre Ville",
+    description: "Appartement moderne au coeur de Tunis, proche de toutes commodités. Parfait pour professionnels.",
+    propertyType: PropertyType.RESIDENTIAL,
+    category: PropertyCategory.APARTMENT,
+    address: "Avenue de la Liberté",
+    city: "Tunis",
+    region: "Tunis",
+    price: 320000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: false,
+    sizeSqm: 140,
+    bedrooms: 3,
+    bathrooms: 2,
+    status: PropertyStatus.AVAILABLE,
+    images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "3",
+    title: "Maison à Sousse",
+    description: "Belle maison familiale dans un quartier calme, jardin et garage. Idéale pour famille.",
+    propertyType: PropertyType.RESIDENTIAL,
+    category: PropertyCategory.HOUSE,
+    address: "Rue de la République",
+    city: "Sousse",
+    region: "Sousse",
+    price: 450000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: true,
+    sizeSqm: 210,
+    bedrooms: 4,
+    bathrooms: 2,
+    status: PropertyStatus.AVAILABLE,
+    images: ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "4",
+    title: "Bureau Moderne Hammamet",
+    description: "Espace de bureau moderne, idéal pour startup ou PME. Parking inclus.",
+    propertyType: PropertyType.COMMERCIAL,
+    category: PropertyCategory.OFFICE,
+    address: "Zone Touristique",
+    city: "Hammamet",
+    region: "Nabeul",
+    price: 280000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: false,
+    sizeSqm: 95,
+    bedrooms: null,
+    bathrooms: 1,
+    status: PropertyStatus.AVAILABLE,
+    images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=400"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    title: "Villa Bord de Mer Bizerte",
+    description: "Villa exceptionnelle avec accès direct à la plage. Vue panoramique sur la mer.",
+    propertyType: PropertyType.RESIDENTIAL,
+    category: PropertyCategory.HOUSE,
+    address: "Corniche de Bizerte",
+    city: "Bizerte",
+    region: "Bizerte",
+    price: 720000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: true,
+    sizeSqm: 280,
+    bedrooms: 4,
+    bathrooms: 3,
+    status: PropertyStatus.AVAILABLE,
+    images: ["https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "6",
+    title: "Boutique Centre Commercial",
+    description: "Boutique bien située dans centre commercial fréquenté. Fort potentiel commercial.",
+    propertyType: PropertyType.COMMERCIAL,
+    category: PropertyCategory.SHOP,
+    address: "Centre Commercial Tunisia Mall",
+    city: "Tunis",
+    region: "Tunis",
+    price: 180000,
+    currency: "TND",
+    pricePeriod: PricePeriod.MONTH,
+    isNegotiable: false,
+    sizeSqm: 45,
+    bedrooms: null,
+    bathrooms: 1,
+    status: PropertyStatus.RENTED,
+    images: ["https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400"],
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -37,152 +143,82 @@ export default function Dashboard() {
   const { user } = useUser();
   const { logout } = useAuth();
   const [properties] = useState<Property[]>(MOCK_PROPERTIES);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
-  const handleLogout = async () => {
+  const {
+    searchQuery,
+    setSearchQuery,
+    city,
+    setCity,
+    propertyType,
+    setPropertyType,
+    category,
+    setCategory,
+    priceRange,
+    setPriceRange,
+    sizeRange,
+    setSizeRange,
+    bedrooms,
+    setBedrooms,
+    bathrooms,
+    setBathrooms,
+    isNegotiable,
+    setIsNegotiable,
+    filteredProperties,
+    resetFilters,
+  } = usePropertyFilters(properties);
+
+  const handleLogout = async (): Promise<void> => {
     await logout();
   };
 
-  const activeCount = properties.filter((p) => p.status === PropertyStatus.ACTIVE).length;
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                PropertyConnect
-              </span>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-violet-600 transition-colors"
-            >
-              <FaSignOutAlt />
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <DashboardHeader userName={user?.fullName || ""} onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome back, {user?.fullName}!
-          </h1>
-          <p className="text-gray-600">Manage your properties and listings</p>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Find Your Dream Property</h1>
+          <p className="text-gray-600">{filteredProperties.length} properties available</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Total Properties</p>
-                <p className="text-3xl font-bold text-gray-800">
-                  {properties.length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center">
-                <FaHome className="text-2xl text-violet-600" />
-              </div>
-            </div>
-          </div>
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Active Listings</p>
-                <p className="text-3xl font-bold text-gray-800">{activeCount}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <FaHeart className="text-2xl text-green-600" />
-              </div>
-            </div>
-          </div>
+        <PropertyFilters
+          city={city}
+          propertyType={propertyType}
+          category={category}
+          priceRange={priceRange}
+          sizeRange={sizeRange}
+          bedrooms={bedrooms}
+          bathrooms={bathrooms}
+          isNegotiable={isNegotiable}
+          onCityChange={setCity}
+          onPropertyTypeChange={setPropertyType}
+          onCategoryChange={setCategory}
+          onPriceRangeChange={setPriceRange}
+          onSizeRangeChange={setSizeRange}
+          onBedroomsChange={setBedrooms}
+          onBathroomsChange={setBathrooms}
+          onIsNegotiableChange={setIsNegotiable}
+          onReset={resetFilters}
+        />
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm mb-1">Profile Views</p>
-                <p className="text-3xl font-bold text-gray-800">1,234</p>
-              </div>
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <FaUser className="text-2xl text-indigo-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Properties Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">My Properties</h2>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg hover:from-violet-700 hover:to-indigo-700 transition-all">
-              <FaPlus />
-              Add Property
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {properties.map((property) => (
-              <div
-                key={property.id}
-                className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="relative h-48">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div
-                    className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
-                      property.status === PropertyStatus.ACTIVE
-                        ? "bg-green-500 text-white"
-                        : property.status === PropertyStatus.PENDING
-                        ? "bg-yellow-500 text-white"
-                        : "bg-gray-500 text-white"
-                    }`}
-                  >
-                    {property.status.charAt(0).toUpperCase() +
-                      property.status.slice(1)}
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    {property.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-gray-600 mb-3">
-                    <FaMapMarkerAlt className="text-violet-600" />
-                    <span>{property.location}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-4 text-gray-700">
-                      <div className="flex items-center gap-1">
-                        <FaBed className="text-violet-600" />
-                        <span>{property.beds}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <FaBath className="text-violet-600" />
-                        <span>{property.baths}</span>
-                      </div>
-                    </div>
-                    <p className="text-xl font-bold text-violet-600">
-                      {property.price}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <PropertyGrid
+          properties={filteredProperties}
+          onViewDetails={setSelectedProperty}
+        />
       </div>
+
+      {selectedProperty && (
+        <PropertyDetailsModal
+          property={selectedProperty}
+          onClose={() => setSelectedProperty(null)}
+        />
+      )}
     </div>
   );
 }

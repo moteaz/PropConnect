@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getAuthenticatedUser } from '@/lib/auth/server';
-import { UserProvider } from '@/lib/auth/user-context';
+import { getAuthenticatedUser } from '@/lib/features/auth/server';
+import { UserProvider } from '@/lib/features/auth/user-context';
 
 export default async function DashboardLayout({
   children,

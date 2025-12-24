@@ -23,22 +23,66 @@ export interface RegisterCredentials {
   password: string;
 }
 
-export interface Property {
-  id: number;
-  title: string;
-  location: string;
-  price: string;
-  beds: number;
-  baths: number;
-  sqft: string;
-  image: string;
-  status: PropertyStatus;
+export enum PropertyType {
+  RESIDENTIAL = 'RESIDENTIAL',
+  COMMERCIAL = 'COMMERCIAL',
+  MIXED = 'MIXED',
+}
+
+export enum PropertyCategory {
+  HOUSE = 'HOUSE',
+  APARTMENT = 'APARTMENT',
+  OFFICE = 'OFFICE',
+  SHOP = 'SHOP',
+  LAND = 'LAND',
 }
 
 export enum PropertyStatus {
-  ACTIVE = 'active',
-  PENDING = 'pending',
-  SOLD = 'sold',
+  AVAILABLE = 'AVAILABLE',
+  RENTED = 'RENTED',
+  HIDDEN = 'HIDDEN',
+}
+
+export enum PricePeriod {
+  MONTH = 'MONTH',
+  YEAR = 'YEAR',
+  DAY = 'DAY',
+}
+
+export interface Property {
+  id: string;
+  title: string;
+  description: string;
+  propertyType: PropertyType;
+  category: PropertyCategory;
+  address: string;
+  city: string;
+  region: string;
+  price: number;
+  currency: string;
+  pricePeriod: PricePeriod;
+  isNegotiable: boolean;
+  sizeSqm: number;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  status: PropertyStatus;
+  images?: string[];
+  createdAt: string;
+}
+
+export interface PropertyFilters {
+  searchQuery: string;
+  city?: string;
+  region?: string;
+  propertyType?: PropertyType;
+  category?: PropertyCategory;
+  minPrice?: number;
+  maxPrice?: number;
+  minSize?: number;
+  maxSize?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  isNegotiable?: boolean;
 }
 
 export interface ApiError {
