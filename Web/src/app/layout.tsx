@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 
@@ -7,8 +7,12 @@ export const metadata: Metadata = {
   description: "AI-powered property search platform with verified listings and community insights",
   keywords: ["real estate", "property", "rent", "buy","sell","house", "apartment"],
   authors: [{ name: "PropertyConnect" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
