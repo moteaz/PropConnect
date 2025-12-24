@@ -6,7 +6,7 @@ import AuthLayout from "@/components/AuthLayout";
 import { FormInput } from "@/components/ui/FormInput";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { ErrorAlert } from "@/components/ui/ErrorAlert";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "@/lib/features/auth/hooks/useAuth";
 import { registerSchema } from "@/lib/validators/auth";
 import type { RegisterCredentials } from "@/lib/types";
 
@@ -35,9 +35,7 @@ export default function SignUp() {
     if (!result.success) {
       const errors: Record<string, string> = {};
       result.error.issues.forEach((err) => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
+        if (err.path[0]) errors[err.path[0].toString()] = err.message;
       });
       setValidationErrors(errors);
       return;
@@ -47,18 +45,14 @@ export default function SignUp() {
     
     try {
       await register(credentials);
-    } catch {
-      // Error handled by useAuth hook
-    }
+    } catch {}
   };
 
   return (
     <AuthLayout>
       <div className="bg-white rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Create Account
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
           <p className="text-gray-600">Join PropertyConnect today</p>
         </div>
 
@@ -117,7 +111,6 @@ export default function SignUp() {
             type="submit"
             disabled={loading}
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-violet-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-violet-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label={loading ? "Creating account" : "Create account"}
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
@@ -126,10 +119,7 @@ export default function SignUp() {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-violet-600 font-semibold hover:text-violet-700 transition-colors"
-            >
+            <Link href="/login" className="text-violet-600 font-semibold hover:text-violet-700 transition-colors">
               Log In
             </Link>
           </p>

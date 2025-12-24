@@ -18,9 +18,6 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           type={showPassword ? 'text' : 'password'}
           className="peer w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent"
           placeholder={label}
-          aria-label={label}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${id}-error` : undefined}
           {...props}
         />
         <label
@@ -33,15 +30,10 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           type="button"
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-4 top-3.5 text-gray-500 hover:text-violet-600 transition-colors"
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
         </button>
-        {error && (
-          <p id={`${id}-error`} className="mt-1 text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     );
   }

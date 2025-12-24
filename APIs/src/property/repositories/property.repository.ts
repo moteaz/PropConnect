@@ -77,6 +77,7 @@ export class PropertyRepository {
             select: {
               id: true,
               fullName: true,
+              phone: true,
             },
           },
           images: {

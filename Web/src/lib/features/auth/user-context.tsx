@@ -9,23 +9,12 @@ interface UserContextValue {
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
-interface UserProviderProps {
-  user: User | null;
-  children: ReactNode;
-}
-
-export function UserProvider({ user, children }: UserProviderProps) {
-  return (
-    <UserContext.Provider value={{ user }}>
-      {children}
-    </UserContext.Provider>
-  );
+export function UserProvider({ user, children }: { user: User | null; children: ReactNode }) {
+  return <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>;
 }
 
 export function useUser() {
   const context = useContext(UserContext);
-  if (context === undefined) {
-    throw new Error('useUser must be used within UserProvider');
-  }
+  if (!context) throw new Error('useUser must be used within UserProvider');
   return context;
 }

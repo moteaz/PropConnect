@@ -23,10 +23,7 @@ export function DashboardHeader({ userName, onLogout }: DashboardHeaderProps) {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-gray-700 hidden sm:inline">Welcome, {userName}</span>
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-violet-600 transition-colors"
-            >
+            <button onClick={onLogout} className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-violet-600 transition-colors">
               <FaSignOutAlt />
               <span className="hidden sm:inline">Logout</span>
             </button>

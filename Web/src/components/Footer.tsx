@@ -8,20 +8,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div>
             <h3 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent mb-4">PropertyConnect</h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Your trusted partner in finding the perfect property for rent or sale.
-            </p>
+            <p className="text-gray-400 mb-6 leading-relaxed">Your trusted partner in finding the perfect property for rent or sale.</p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all" aria-label="Facebook">
+              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all">
                 <FaFacebook size={20} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all" aria-label="Twitter">
+              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all">
                 <FaTwitter size={20} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all" aria-label="Instagram">
+              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all">
                 <FaInstagram size={20} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all" aria-label="LinkedIn">
+              <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-violet-600 hover:text-white transition-all">
                 <FaLinkedin size={20} />
               </a>
             </div>
@@ -68,9 +66,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">
-              &copy; {new Date().getFullYear()} PropertyConnect. All rights reserved.
-            </p>
+            <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} PropertyConnect. All rights reserved.</p>
             <div className="flex gap-6 text-sm">
               <Link href="/privacy" className="text-gray-400 hover:text-violet-400 transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="text-gray-400 hover:text-violet-400 transition-colors">Terms of Service</Link>

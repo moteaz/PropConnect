@@ -68,21 +68,11 @@ export interface Property {
   status: PropertyStatus;
   images?: string[];
   createdAt: string;
-}
-
-export interface PropertyFilters {
-  searchQuery: string;
-  city?: string;
-  region?: string;
-  propertyType?: PropertyType;
-  category?: PropertyCategory;
-  minPrice?: number;
-  maxPrice?: number;
-  minSize?: number;
-  maxSize?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  isNegotiable?: boolean;
+  owner?: {
+    id: string;
+    fullName: string;
+    phone?: string;
+  };
 }
 
 export interface ApiError {

@@ -8,14 +8,14 @@ import type { LoginCredentials, RegisterCredentials, ApiError } from '@/lib/type
 export function useAuth() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
   const login = async (credentials: LoginCredentials) => {
     setLoading(true);
     setError('');
     
     try {
-      const response = await authService.login(credentials);
+      await authService.login(credentials);
       router.push('/dashboard');
       router.refresh();
     } catch (err) {

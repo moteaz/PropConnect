@@ -14,16 +14,10 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="flex gap-4 items-center">
-            <Link
-              href="/login"
-              className="px-6 py-2.5 text-violet-600 font-semibold hover:text-violet-700 transition-colors"
-            >
+            <Link href="/login" className="px-6 py-2.5 text-violet-600 font-semibold hover:text-violet-700 transition-colors">
               Login
             </Link>
-            <Link
-              href="/signup"
-              className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-            >
+            <Link href="/signup" className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl hover:scale-105">
               Sign Up
             </Link>
           </div>

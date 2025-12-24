@@ -32,34 +32,23 @@ export default function Testimonials() {
           <span className="inline-block bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4">
             💬 Success Stories
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Loved by Our Community
-          </h2>
-          <p className="text-xl text-gray-600">
-            Real stories from real people who found their dream homes
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Loved by Our Community</h2>
+          <p className="text-xl text-gray-600">Real stories from real people who found their dream homes</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-3xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 relative overflow-hidden group"
-            >
+            <div key={index} className="bg-white rounded-3xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-full filter blur-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 -translate-y-1/2 translate-x-1/2"></div>
               <div className="flex items-center mb-4">
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  className="w-16 h-16 rounded-full mr-4 border-4 border-violet-100"
-                />
+                <img src={testimonial.image} alt={testimonial.name} className="w-16 h-16 rounded-full mr-4 border-4 border-violet-100" />
                 <div>
                   <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
                   <p className="text-gray-600 text-sm">{testimonial.role}</p>
                 </div>
               </div>
               <div className="flex mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
+                {Array.from({ length: testimonial.rating }).map((_, i) => (
                   <FaStar key={i} className="text-yellow-400" />
                 ))}
               </div>

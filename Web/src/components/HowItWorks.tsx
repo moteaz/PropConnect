@@ -28,12 +28,8 @@ export default function HowItWorks() {
     <section className="py-20 bg-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Your Journey to Home Ownership
-          </h2>
-          <p className="text-xl text-gray-600">
-            Simple, transparent, and designed for you
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Your Journey to Home Ownership</h2>
+          <p className="text-xl text-gray-600">Simple, transparent, and designed for you</p>
         </div>
 
         <div className="relative">
@@ -50,9 +46,7 @@ export default function HowItWorks() {
                     {index + 1}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-3">
-                  {step.title}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-3">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { FaBed, FaBath, FaMapMarkerAlt, FaTimes, FaRulerCombined, FaTag, FaHome, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import type { Property } from "@/lib/types";
 import { PropertyStatus } from "@/lib/types";
@@ -10,78 +11,45 @@ interface PropertyDetailsModalProps {
   onClose: () => void;
 }
 
+const STATUS_STYLES = {
+  [PropertyStatus.AVAILABLE]: "bg-green-500 text-white",
+  [PropertyStatus.RENTED]: "bg-yellow-500 text-white",
+  [PropertyStatus.HIDDEN]: "bg-gray-500 text-white",
+};
+
 export function PropertyDetailsModal({ property, onClose }: PropertyDetailsModalProps) {
-  const images = property.images && property.images.length > 0 
-    ? property.images 
-    : ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800'];
-  
+  const images = property.images?.length ? property.images : ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800'];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const price = Number(property.price);
+  const sizeSqm = Number(property.sizeSqm);
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   
   return (
-    <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" 
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white/95 backdrop-blur-md rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" 
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white/95 backdrop-blur-md rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="relative">
-          <img 
-            src={images[currentImageIndex]} 
-            alt={property.title} 
-            className="w-full h-80 object-cover" 
-          />
+          <Image src={images[currentImageIndex]} alt={property.title} width={800} height={320} className="w-full h-80 object-cover" />
           {images.length > 1 && (
             <>
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
-              >
+              <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors">
                 <FaChevronLeft className="text-gray-800" />
               </button>
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
-              >
+              <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors">
                 <FaChevronRight className="text-gray-800" />
               </button>
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {images.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50'
-                    }`}
-                  />
+                  <button key={index} onClick={() => setCurrentImageIndex(index)} className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex ? 'bg-white w-6' : 'bg-white/50'}`} />
                 ))}
               </div>
             </>
           )}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-          >
+          <button onClick={onClose} className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors">
             <FaTimes className="text-gray-600" />
           </button>
-          <div 
-            className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
-              property.status === PropertyStatus.AVAILABLE 
-                ? "bg-green-500 text-white" 
-                : property.status === PropertyStatus.RENTED
-                ? "bg-yellow-500 text-white"
-                : "bg-gray-500 text-white"
-            }`}
-          >
+          <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${STATUS_STYLES[property.status]}`}>
             {property.status}
           </div>
           {property.isNegotiable && (
@@ -110,12 +78,20 @@ export function PropertyDetailsModal({ property, onClose }: PropertyDetailsModal
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-violet-600">
-                {(property.price / 1000).toLocaleString()} TND
-              </p>
+              <p className="text-2xl font-bold text-violet-600">{price} TND</p>
               <p className="text-xs text-gray-500">per {property.pricePeriod.toLowerCase()}</p>
             </div>
           </div>
+          
+          {property.owner && (
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <h3 className="text-base font-semibold text-gray-800 mb-2">Contact Owner</h3>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-700"><span className="font-medium">Name:</span> {property.owner.fullName}</p>
+                {property.owner.phone && <p className="text-sm text-gray-700"><span className="font-medium">Phone:</span> {property.owner.phone}</p>}
+              </div>
+            </div>
+          )}
           
           <div className="mb-6">
             <h3 className="text-base font-semibold text-gray-800 mb-2">Description</h3>
@@ -139,17 +115,19 @@ export function PropertyDetailsModal({ property, onClose }: PropertyDetailsModal
             )}
             <div className="bg-gray-50 rounded-lg p-3 text-center">
               <FaRulerCombined className="text-xl text-violet-600 mx-auto mb-2" />
-              <p className="text-xl font-bold text-gray-800">{property.sizeSqm}</p>
+              <p className="text-xl font-bold text-gray-800">{sizeSqm}</p>
               <p className="text-xs text-gray-600">m²</p>
             </div>
           </div>
           
           <div className="flex gap-3">
-            <button className="flex-1 py-2.5 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition-colors font-semibold">
-              Contact Owner
-            </button>
+            {property.owner?.phone && (
+              <a href={`tel:${property.owner.phone}`} className="flex-1 py-2.5 bg-violet-600 text-white text-sm rounded-lg hover:bg-violet-700 transition-colors font-semibold text-center">
+                Call Owner
+              </a>
+            )}
             <button className="flex-1 py-2.5 border-2 border-violet-600 text-violet-600 text-sm rounded-lg hover:bg-violet-50 transition-colors font-semibold">
-              Schedule Visit
+              Add to Favorites
             </button>
           </div>
         </div>

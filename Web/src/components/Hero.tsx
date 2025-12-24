@@ -4,11 +4,7 @@ import { useState } from "react";
 import { FaSearch, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function Hero() {
-  const [searchData, setSearchData] = useState({
-    location: "",
-    type: "all",
-    priceRange: "all",
-  });
+  const [searchData, setSearchData] = useState({ location: "", type: "all" });
 
   return (
     <section className="relative bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white py-32 overflow-hidden">
@@ -41,20 +37,14 @@ export default function Hero() {
                 type="text"
                 placeholder="Enter location or city"
                 value={searchData.location}
-                onChange={(e) =>
-                  setSearchData({ ...searchData, location: e.target.value })
-                }
+                onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-violet-500 text-gray-800 text-lg"
-                aria-label="Search location"
               />
             </div>
             <select
               value={searchData.type}
-              onChange={(e) =>
-                setSearchData({ ...searchData, type: e.target.value })
-              }
+              onChange={(e) => setSearchData({ ...searchData, type: e.target.value })}
               className="px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-violet-500 text-gray-800 text-lg"
-              aria-label="Property type"
             >
               <option value="all">All Types</option>
               <option value="house">House</option>

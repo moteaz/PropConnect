@@ -1,7 +1,13 @@
 import { apiClient } from '@/lib/api/client';
 import type { AuthResponse, LoginCredentials, RegisterCredentials } from '@/lib/types';
 
-export class AuthService {
+interface AuthService {
+  login(credentials: LoginCredentials): Promise<AuthResponse>;
+  register(credentials: RegisterCredentials): Promise<AuthResponse>;
+  logout(): Promise<void>;
+}
+
+class AuthServiceImpl implements AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const { data } = await apiClient.post<AuthResponse>('/api/auth/login', credentials);
     return data;
@@ -15,11 +21,6 @@ export class AuthService {
   async logout(): Promise<void> {
     await apiClient.post('/api/auth/logout');
   }
-
-  async getCurrentUser(): Promise<AuthResponse['user']> {
-    const { data } = await apiClient.get<AuthResponse['user']>('/api/auth/me');
-    return data;
-  }
 }
 
-export const authService = new AuthService();
+export const authService: AuthService = new AuthServiceImpl();

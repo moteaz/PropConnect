@@ -1,23 +1,22 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import type { ApiError } from '@/lib/types';
+import { config } from '@/lib/config';
 
 class ApiClient {
-  private client: AxiosInstance;
+  private instance: AxiosInstance;
 
   constructor() {
-    this.client = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true, // Send cookies with requests
+    this.instance = axios.create({
+      baseURL: config.apiUrl,
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
     });
 
     this.setupInterceptors();
   }
 
-  private setupInterceptors() {
-    this.client.interceptors.response.use(
+  private setupInterceptors(): void {
+    this.instance.interceptors.response.use(
       (response) => response,
       (error: AxiosError<ApiError>) => {
         const apiError: ApiError = {
@@ -26,10 +25,8 @@ class ApiClient {
           statusCode: error.response?.status,
         };
 
-        if (error.response?.status === 401) {
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
+        if (error.response?.status === 401 && typeof window !== 'undefined') {
+          window.location.href = '/login';
         }
 
         return Promise.reject(apiError);
@@ -37,9 +34,9 @@ class ApiClient {
     );
   }
 
-  getInstance() {
-    return this.client;
+  public getClient(): AxiosInstance {
+    return this.instance;
   }
 }
 
-export const apiClient = new ApiClient().getInstance();
+export const apiClient = new ApiClient().getClient();

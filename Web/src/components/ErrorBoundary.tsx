@@ -9,7 +9,6 @@ interface Props {
 
 interface State {
   hasError: boolean;
-  error?: Error;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -18,8 +17,8 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -32,9 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
         this.props.fallback || (
           <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                Something went wrong
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Something went wrong</h2>
               <button
                 onClick={() => this.setState({ hasError: false })}
                 className="px-6 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700"

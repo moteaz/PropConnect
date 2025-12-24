@@ -14,9 +14,6 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           id={id}
           className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-violet-500 transition-colors placeholder-transparent"
           placeholder={label}
-          aria-label={label}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${id}-error` : undefined}
           {...props}
         />
         <label
@@ -25,11 +22,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         >
           {label}
         </label>
-        {error && (
-          <p id={`${id}-error`} className="mt-1 text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     );
   }
